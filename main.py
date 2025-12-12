@@ -75,6 +75,7 @@ true_scroll = [0, 0]
 
 enemy_moving_left = False 
 enemy_moving_right = False 
+facing = 1 #for left side it is -1 
 
 shoot = False 
 bullets = []
@@ -99,17 +100,18 @@ while running:
 
     enemy_movement = [0, 0]
     if enemy_moving_right == True:
-        enemy_movement[0] += 2
+        enemy_movement[0] += 1
     if enemy_moving_left == True:
-        enemy_movement[0] -= 2
+        enemy_movement[0] -= 1
 
     if shoot == True:
-        bullets.append(pygame.Rect(player_rect.x, player_rect.y, 5, 5))
+        bullets.append([pygame.Rect(player_rect.x, player_rect.y, 5, 5), facing])
         shoot = False
 
     enemy_moving_left = False
     enemy_moving_right = False
 
+    #enemy chase logic
     if abs(player_rect.x - enemy_rect.x) < 100:
         if player_rect.x > enemy_rect.x:
             enemy_moving_right = True 
@@ -142,14 +144,15 @@ while running:
         y += 1
 
     for bullet in bullets:
-        bullet.x += 10  
-        pygame.draw.rect(display, (255, 0, 0), pygame.Rect(bullet.x - scroll[0], (bullet.y+5) - scroll[1], 5, 5))
+
+        bullet_rect, direction = bullet
+        bullet_rect.x += 10 * direction
+        pygame.draw.rect(display, (255, 0, 0), pygame.Rect(bullet_rect.x - scroll[0], (bullet_rect.y+5) - scroll[1], 5, 5))
         
         for tile in tile_rects:
-            if bullet.colliderect(tile):
+            if bullet_rect.colliderect(tile):
                 bullets.remove(bullet)
                 break 
-
     
     player_rect, collisions = move(player_rect, player_movement, tile_rects)
     enemy_rect, collisions_enemny = move(enemy_rect, enemy_movement, tile_rects)
@@ -172,8 +175,10 @@ while running:
         if event.type == KEYDOWN:
             if event.key == K_RIGHT:
                 moving_right = True 
+                facing = 1
             if event.key == K_LEFT:
                 moving_left = True 
+                facing = -1
             if event.key == K_UP:
                 if air_timer < 6:
                     player_y_momentum = -5
