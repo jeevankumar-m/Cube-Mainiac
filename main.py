@@ -76,9 +76,13 @@ true_scroll = [0, 0]
 enemy_moving_left = False 
 enemy_moving_right = False 
 facing = 1 #for left side it is -1 
+enemy_facing = 1
+enemy_cool_down_timer = 0 
 
 shoot = False 
+enemy_shoot = False
 bullets = []
+enemy_bullets = []
 
 running = True
 while running:
@@ -98,6 +102,9 @@ while running:
     if moving_left == True:
         player_movement[0] -= 3
 
+    if enemy_cool_down_timer > 0:
+        enemy_cool_down_timer -= 1
+
     enemy_movement = [0, 0]
     if enemy_moving_right == True:
         enemy_movement[0] += 1
@@ -108,19 +115,32 @@ while running:
         bullets.append([pygame.Rect(player_rect.x, player_rect.y, 5, 5), facing])
         shoot = False
 
+    if enemy_shoot == True:
+        if enemy_cool_down_timer == 0:
+            enemy_bullets.append([pygame.Rect(enemy_rect.x, enemy_rect.y, 5, 5), facing])
+            enemy_cool_down_timer = 30 
+            shoot = False
+
     enemy_moving_left = False
     enemy_moving_right = False
 
     #enemy chase logic
     if abs(player_rect.x - enemy_rect.x) < 100:
-        if player_rect.x > enemy_rect.x:
+        if player_rect.x > enemy_rect.x and player_rect.y == enemy_rect.y:
             enemy_moving_right = True 
-        if player_rect.x < enemy_rect.x:
+            enemy_shoot = True
+            enemy_facing = 1
+        if player_rect.x < enemy_rect.x and player_rect.y == enemy_rect.y:
             enemy_moving_left = True 
+            enemy_shoot = True
+            enemy_facing = -1
 
     if abs(player_rect.x - enemy_rect.x) < 5:
         enemy_moving_left = False
         enemy_moving_right = False
+
+    if player_rect.y != enemy_rect.y:
+        enemy_shoot = False
 
     player_movement[1] += player_y_momentum 
     player_y_momentum += 0.2
@@ -152,6 +172,17 @@ while running:
         for tile in tile_rects:
             if bullet_rect.colliderect(tile):
                 bullets.remove(bullet)
+                break 
+
+    for enemy_bullet in enemy_bullets:
+
+        enemy_bullet_rect, enemy_bullet_direction = enemy_bullet
+        enemy_bullet_rect.x += 10 * enemy_bullet_direction
+        pygame.draw.rect(display, (0, 255, 0), pygame.Rect(enemy_bullet_rect.x - scroll[0], (enemy_bullet_rect.y+5) - scroll[1], 5, 5))
+        
+        for tile in tile_rects:
+            if enemy_bullet_rect.colliderect(tile):
+                enemy_bullets.remove(enemy_bullet)
                 break 
     
     player_rect, collisions = move(player_rect, player_movement, tile_rects)
