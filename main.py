@@ -13,10 +13,12 @@ player_img = pygame.image.load('player.png')
 dirt_img = pygame.image.load('dirt.png')
 dirt2_img = pygame.image.load('dirt2.png')
 game_over_img = pygame.image.load('gameover.png')
+enemy_img = pygame.image.load('enemy.png')
 
 TILE_SIZE = dirt_img.get_width()
 
 player_rect = pygame.Rect(0 * TILE_SIZE, 24 * TILE_SIZE, player_img.get_width(), player_img.get_height())
+enemy_rect = pygame.Rect(27 * TILE_SIZE, 26 * TILE_SIZE, player_img.get_width(), player_img.get_height())
 def load_map(path):
     f = open(path + '.txt', 'r')
     data = f.read()
@@ -57,6 +59,12 @@ def move(rect, movement, tiles):
             collision_types['bottom'] = True
     return rect, collision_types
 
+#if distance between the x of player and x of enemy in a range 
+#if player.x > enemy.x 
+#then enemy.x += 2 
+#is player.x < enemy.x 
+#then enemy.x -= 2
+
 game_map = load_map('map')
 player_y_momentum = 0
 air_timer = 0 
@@ -64,6 +72,9 @@ air_timer = 0
 moving_right = False 
 moving_left = False 
 true_scroll = [0, 0]
+
+enemy_moving_left = False 
+enemy_moving_right = False 
 
 shoot = False 
 bullets = []
@@ -86,9 +97,24 @@ while running:
     if moving_left == True:
         player_movement[0] -= 3
 
+    enemy_movement = [0, 0]
+    if enemy_moving_right == True:
+        enemy_movement[0] += 3
+    if enemy_moving_left == True:
+        enemy_movement[0] -= 3
+
     if shoot == True:
         bullets.append(pygame.Rect(player_rect.x, player_rect.y, 5, 5))
         shoot = False
+
+    enemy_moving_left = False
+    enemy_moving_right = False
+
+    if abs(player_rect.x - enemy_rect.x) < 100:
+        if player_rect.x > enemy_rect.x:
+            enemy_moving_right = True 
+        if player_rect.x < enemy_rect.x:
+            enemy_moving_left = True 
 
     player_movement[1] += player_y_momentum 
     player_y_momentum += 0.2
@@ -120,8 +146,9 @@ while running:
                 bullets.remove(bullet)
                 break 
 
-                
+    
     player_rect, collisions = move(player_rect, player_movement, tile_rects)
+    enemy_rect, collisions_enemny = move(enemy_rect, enemy_movement, tile_rects)
 
     if player_rect.colliderect(game_over_rect[0]):
         running = False
@@ -155,6 +182,7 @@ while running:
                 moving_left = False 
 
     display.blit(player_img, (player_rect.x - scroll[0], player_rect.y - scroll[1]))
+    display.blit(enemy_img, (enemy_rect.x - scroll[0], enemy_rect.y - scroll[1]))
 
     surf = pygame.transform.scale(display, WINDOW_SIZE)
     screen.blit(surf, (0, 0))
