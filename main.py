@@ -25,9 +25,9 @@ shoot_sfx = pygame.mixer.Sound('sfx/shoot.wav')
 
 TILE_SIZE = dirt_img.get_width()
 
-player_rect = pygame.Rect(0 * TILE_SIZE, 24 * TILE_SIZE, player_img.get_width(), player_img.get_height())
+player_rect = pygame.Rect(0 * TILE_SIZE, 24 * TILE_SIZE, 16, 16)
 enemy_rect = pygame.Rect(27 * TILE_SIZE, 26 * TILE_SIZE, player_img.get_width(), player_img.get_height())
-background_objects = [[0.25,[120,10,70,400]],[0.25,[280,30,40,400]],[0.5,[30,40,40,400]],[0.5,[130,90,100,400]],[0.5,[300,80,120,400]]]
+background_objects = [[0.25,[120,10,40,500]],[0.25,[280,30,40,500]],[0.5,[30,40,40,500]],[0.5,[130,90,60,500]],[0.5,[400,80,60,500]]]
 def load_map(path):
     f = open(path + '.txt', 'r')
     data = f.read()
@@ -98,8 +98,8 @@ while running:
     display.fill((72, 77, 77))
     pygame.draw.rect(display, (43, 46, 46), pygame.Rect(0, 150, 350, 125))
 
-    true_scroll[0] += (player_rect.x - true_scroll[0] - 191) / 20 
-    true_scroll[1] += (player_rect.y - true_scroll[1] - 141) / 20 
+    true_scroll[0] += (player_rect.x - true_scroll[0] - 184) / 20 
+    true_scroll[1] += (player_rect.y - true_scroll[1] - 134) / 20 
 
     scroll = true_scroll.copy() 
     scroll[0] = int(scroll[0])
@@ -107,10 +107,15 @@ while running:
 
     for background_object in background_objects:
         obj_rect = pygame.Rect(background_object[1][0]-scroll[0] * background_object[0], background_object[1][1]-scroll[1] * background_object[0], background_object[1][2], background_object[1][3])
-        if background_object[0] == 0.5:
-            pygame.draw.rect(display, (33, 35, 35), obj_rect)
-        else:
-            pygame.draw.rect(display, (14, 15, 15), obj_rect)
+        if background_object[0] == 0.5:   
+            surf = pygame.Surface((obj_rect.width, obj_rect.height), pygame.SRCALPHA)
+            pygame.draw.rect(surf, (33, 35, 35), (0, 0, obj_rect.width, obj_rect.height))
+        else: 
+            surf = pygame.Surface((obj_rect.width, obj_rect.height), pygame.SRCALPHA)
+            pygame.draw.rect(surf, (14, 15, 15), (0, 0, obj_rect.width, obj_rect.height))
+        rotated = pygame.transform.rotate(surf, -45)
+        rot_rect = rotated.get_rect(center=obj_rect.center)
+        display.blit(rotated, rot_rect)
 
     player_movement = [0, 0]
     if moving_right == True:
@@ -136,7 +141,7 @@ while running:
         if enemy_cool_down_timer == 0:
             shoot_sfx.set_volume(1)
             shoot_sfx.play()
-            enemy_bullets.append([pygame.Rect(enemy_rect.x, enemy_rect.y, 5, 5), facing])
+            enemy_bullets.append([pygame.Rect(enemy_rect.x, enemy_rect.y, 5, 5), enemy_facing])
             enemy_cool_down_timer = 60 
             shoot = False
 
