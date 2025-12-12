@@ -60,10 +60,18 @@ player_y_momentum = 0
 
 moving_right = False 
 moving_left = False 
+true_scroll = [0, 0]
 
 
 while True:
     display.fill((255, 255, 255))
+
+    true_scroll[0] += (player_rect.x - true_scroll[0] - 191) / 20 
+    true_scroll[1] += (player_rect.y - true_scroll[1] - 141) / 20 
+
+    scroll = true_scroll.copy() 
+    scroll[0] = int(scroll[0])
+    scroll[1] = int(scroll[1])
 
     player_movement = [0, 0]
     if moving_right == True:
@@ -80,9 +88,9 @@ while True:
         x = 0
         for tile in row:
             if tile == '1': 
-                display.blit(dirt_img, (x * TILE_SIZE, y * TILE_SIZE))
+                display.blit(dirt_img, (x * TILE_SIZE - scroll[0], y * TILE_SIZE - scroll[1]))
             if tile == '2':
-                display.blit(dirt_img, (x * TILE_SIZE, y * TILE_SIZE))
+                display.blit(dirt_img, (x * TILE_SIZE - scroll[0], y * TILE_SIZE - scroll[1]))
             if tile != '0':
                 tile_rects.append(pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE))
             x += 1 
@@ -110,7 +118,7 @@ while True:
             if event.key == K_LEFT:
                 moving_left = False 
 
-    display.blit(player_img, (player_rect.x, player_rect.y))
+    display.blit(player_img, (player_rect.x - scroll[0], player_rect.y - scroll[1]))
 
     surf = pygame.transform.scale(display, WINDOW_SIZE)
     screen.blit(surf, (0, 0))
