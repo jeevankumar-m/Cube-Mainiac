@@ -57,6 +57,7 @@ def move(rect, movement, tiles):
 
 game_map = load_map('map')
 player_y_momentum = 0
+air_timer = 0 
 
 moving_right = False 
 moving_left = False 
@@ -100,6 +101,12 @@ while True:
 
     if collisions['bottom']:
         player_y_momentum = 0 
+        air_timer = 0 
+    if collisions['top']:
+        player_y_momentum = 1
+    else:
+        air_timer += 1
+    
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -111,7 +118,8 @@ while True:
             if event.key == K_LEFT:
                 moving_left = True 
             if event.key == K_UP:
-                player_y_momentum = -5 
+                if air_timer < 6:
+                    player_y_momentum = -5
         if event.type == KEYUP:
             if event.key == K_RIGHT:
                 moving_right = False 
