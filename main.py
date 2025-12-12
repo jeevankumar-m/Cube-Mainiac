@@ -15,6 +15,14 @@ dirt2_img = pygame.image.load('dirt2.png')
 game_over_img = pygame.image.load('gameover.png')
 enemy_img = pygame.image.load('enemy.png')
 
+#music 
+pygame.mixer.music.load('sfx/background.mp3')
+pygame.mixer.music.play(-1)
+pygame.mixer.music.set_volume(0.7)
+
+jump_sfx = pygame.mixer.Sound('sfx/jump.wav')
+shoot_sfx = pygame.mixer.Sound('sfx/shoot.wav')
+
 TILE_SIZE = dirt_img.get_width()
 
 player_rect = pygame.Rect(0 * TILE_SIZE, 24 * TILE_SIZE, player_img.get_width(), player_img.get_height())
@@ -116,9 +124,12 @@ while running:
         shoot = False
 
     if enemy_shoot == True:
+        
         if enemy_cool_down_timer == 0:
+            shoot_sfx.set_volume(1)
+            shoot_sfx.play()
             enemy_bullets.append([pygame.Rect(enemy_rect.x, enemy_rect.y, 5, 5), facing])
-            enemy_cool_down_timer = 30 
+            enemy_cool_down_timer = 60 
             shoot = False
 
     enemy_moving_left = False
@@ -164,7 +175,6 @@ while running:
         y += 1
 
     for bullet in bullets:
-
         bullet_rect, direction = bullet
         bullet_rect.x += 10 * direction
         pygame.draw.rect(display, (255, 0, 0), pygame.Rect(bullet_rect.x - scroll[0], (bullet_rect.y+5) - scroll[1], 5, 5))
@@ -175,9 +185,8 @@ while running:
                 break 
 
     for enemy_bullet in enemy_bullets:
-
         enemy_bullet_rect, enemy_bullet_direction = enemy_bullet
-        enemy_bullet_rect.x += 10 * enemy_bullet_direction
+        enemy_bullet_rect.x += 6 * enemy_bullet_direction
         pygame.draw.rect(display, (0, 255, 0), pygame.Rect(enemy_bullet_rect.x - scroll[0], (enemy_bullet_rect.y+5) - scroll[1], 5, 5))
         
         for tile in tile_rects:
@@ -213,8 +222,12 @@ while running:
             if event.key == K_UP:
                 if air_timer < 6:
                     player_y_momentum = -5
+                    jump_sfx.play()
+                    jump_sfx.set_volume(1)
             if event.key == K_SPACE:
                 shoot = True 
+                shoot_sfx.play()
+                shoot_sfx.set_volume(1)
         if event.type == KEYUP:
             if event.key == K_RIGHT:
                 moving_right = False 
