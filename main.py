@@ -99,9 +99,9 @@ while running:
 
     enemy_movement = [0, 0]
     if enemy_moving_right == True:
-        enemy_movement[0] += 3
+        enemy_movement[0] += 2
     if enemy_moving_left == True:
-        enemy_movement[0] -= 3
+        enemy_movement[0] -= 2
 
     if shoot == True:
         bullets.append(pygame.Rect(player_rect.x, player_rect.y, 5, 5))
@@ -115,6 +115,10 @@ while running:
             enemy_moving_right = True 
         if player_rect.x < enemy_rect.x:
             enemy_moving_left = True 
+
+    if abs(player_rect.x - enemy_rect.x) < 5:
+        enemy_moving_left = False
+        enemy_moving_right = False
 
     player_movement[1] += player_y_momentum 
     player_y_momentum += 0.2
