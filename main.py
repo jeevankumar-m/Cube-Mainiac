@@ -27,6 +27,7 @@ TILE_SIZE = dirt_img.get_width()
 
 player_rect = pygame.Rect(0 * TILE_SIZE, 24 * TILE_SIZE, player_img.get_width(), player_img.get_height())
 enemy_rect = pygame.Rect(27 * TILE_SIZE, 26 * TILE_SIZE, player_img.get_width(), player_img.get_height())
+background_objects = [[0.25,[120,10,70,400]],[0.25,[280,30,40,400]],[0.5,[30,40,40,400]],[0.5,[130,90,100,400]],[0.5,[300,80,120,400]]]
 def load_map(path):
     f = open(path + '.txt', 'r')
     data = f.read()
@@ -103,6 +104,13 @@ while running:
     scroll = true_scroll.copy() 
     scroll[0] = int(scroll[0])
     scroll[1] = int(scroll[1])
+
+    for background_object in background_objects:
+        obj_rect = pygame.Rect(background_object[1][0]-scroll[0] * background_object[0], background_object[1][1]-scroll[1] * background_object[0], background_object[1][2], background_object[1][3])
+        if background_object[0] == 0.5:
+            pygame.draw.rect(display, (33, 35, 35), obj_rect)
+        else:
+            pygame.draw.rect(display, (14, 15, 15), obj_rect)
 
     player_movement = [0, 0]
     if moving_right == True:
