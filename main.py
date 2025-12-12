@@ -65,11 +65,13 @@ moving_right = False
 moving_left = False 
 true_scroll = [0, 0]
 
+shoot = False 
+bullets = []
+
 running = True
 while running:
     display.fill((72, 77, 77))
     pygame.draw.rect(display, (43, 46, 46), pygame.Rect(0, 150, 350, 125))
-
 
     true_scroll[0] += (player_rect.x - true_scroll[0] - 191) / 20 
     true_scroll[1] += (player_rect.y - true_scroll[1] - 141) / 20 
@@ -83,6 +85,10 @@ while running:
         player_movement[0] += 3
     if moving_left == True:
         player_movement[0] -= 3
+
+    if shoot == True:
+        bullets.append(pygame.Rect(player_rect.x, player_rect.y, 5, 5))
+        shoot = False
 
     player_movement[1] += player_y_momentum 
     player_y_momentum += 0.2
@@ -105,6 +111,16 @@ while running:
             x += 1 
         y += 1
 
+    for bullet in bullets:
+        bullet.x += 10  
+        pygame.draw.rect(display, (255, 0, 0), pygame.Rect(bullet.x - scroll[0], (bullet.y+5) - scroll[1], 5, 5))
+        
+        for tile in tile_rects:
+            if bullet.colliderect(tile):
+                bullets.remove(bullet)
+                break 
+
+                
     player_rect, collisions = move(player_rect, player_movement, tile_rects)
 
     if player_rect.colliderect(game_over_rect[0]):
@@ -130,6 +146,8 @@ while running:
             if event.key == K_UP:
                 if air_timer < 6:
                     player_y_momentum = -5
+            if event.key == K_SPACE:
+                shoot = True 
         if event.type == KEYUP:
             if event.key == K_RIGHT:
                 moving_right = False 
