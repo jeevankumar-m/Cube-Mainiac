@@ -93,6 +93,14 @@ enemy_bullets = []
 
 #alive logic 
 enemy_alive = True
+player_alive = True
+
+#healthbar logic 
+player_max_health = 100 
+player_health = player_max_health 
+enemy_max_health = 100 
+enemy_health = enemy_max_health
+
 
 running = True
 while running:
@@ -117,6 +125,15 @@ while running:
         rotated = pygame.transform.rotate(surf, -45)
         rot_rect = rotated.get_rect(center=obj_rect.center)
         display.blit(rotated, rot_rect)
+
+    if player_alive:
+        player_bar_width = 50
+        player_bar_height = 4 
+        health_ratio = player_health / player_max_health
+        current_width = player_bar_width * health_ratio 
+
+        pygame.draw.rect(display, (60, 60, 60), pygame.Rect(25, 20, player_bar_width, player_bar_height))
+        pygame.draw.rect(display, (40, 200, 40), pygame.Rect(25, 20, current_width, player_bar_height))
 
     player_movement = [0, 0]
     if moving_right == True:
@@ -169,6 +186,15 @@ while running:
         if player_rect.y != enemy_rect.y:
             enemy_shoot = False
 
+    if enemy_alive:
+        enemy_bar_width = 16
+        enemy_bar_height = 2
+        health_ratio = enemy_health / enemy_max_health
+        current_width = enemy_bar_width * health_ratio 
+
+        pygame.draw.rect(display, (60, 60, 60), pygame.Rect(enemy_rect.x - scroll[0], enemy_rect.y - scroll[1] - 6, enemy_bar_width, enemy_bar_height))
+        pygame.draw.rect(display, (255, 0, 0), pygame.Rect(enemy_rect.x - scroll[0], enemy_rect.y - scroll[1] - 6, current_width, enemy_bar_height))
+
     player_movement[1] += player_y_momentum 
     player_y_momentum += 0.2
 
@@ -201,7 +227,9 @@ while running:
                 break 
             if bullet_rect.colliderect(enemy_rect):
                 bullets.remove(bullet)
-                enemy_alive = False 
+                if enemy_health == 0:
+                    enemy_alive = False
+                enemy_health -= 25
                 break
 
     for enemy_bullet in enemy_bullets:
@@ -212,6 +240,11 @@ while running:
         for tile in tile_rects:
             if enemy_bullet_rect.colliderect(tile):
                 enemy_bullets.remove(enemy_bullet)
+            if enemy_bullet_rect.colliderect(player_rect):
+                enemy_bullets.remove(enemy_bullet)
+                if player_health == 0:
+                    player_alive = False
+                player_health -= 15
                 break 
     
     player_rect, collisions = move(player_rect, player_movement, tile_rects)
