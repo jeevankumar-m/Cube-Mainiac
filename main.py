@@ -1,5 +1,6 @@
 import pygame, sys
 pygame.init() 
+pygame.font.init() 
 from pygame.locals import * 
 
 pygame.display.set_caption('Cube Mainiac')
@@ -14,6 +15,9 @@ dirt_img = pygame.image.load('dirt.png')
 dirt2_img = pygame.image.load('dirt2.png')
 game_over_img = pygame.image.load('gameover.png')
 enemy_img = pygame.image.load('enemy.png')
+
+#font 
+font = pygame.font.Font('pixel-operator.ttf', 8)
 
 #music 
 pygame.mixer.music.load('sfx/background.mp3')
@@ -132,8 +136,11 @@ while running:
         health_ratio = player_health / player_max_health
         current_width = player_bar_width * health_ratio 
 
+        text_surf = font.render("HP", False, (255, 255, 255))
+
         pygame.draw.rect(display, (60, 60, 60), pygame.Rect(25, 20, player_bar_width, player_bar_height))
         pygame.draw.rect(display, (40, 200, 40), pygame.Rect(25, 20, current_width, player_bar_height))
+        pygame.draw.rect(display, (255, 255, 255), pygame.Rect(25, 20, player_bar_width, player_bar_height), 1)
 
     player_movement = [0, 0]
     if moving_right == True:
@@ -290,6 +297,9 @@ while running:
     display.blit(player_img, (player_rect.x - scroll[0], player_rect.y - scroll[1]))
     if enemy_alive:
         display.blit(enemy_img, (enemy_rect.x - scroll[0], enemy_rect.y - scroll[1]))
+
+    #font display 
+    display.blit(text_surf, (10, 17))
 
     surf = pygame.transform.scale(display, WINDOW_SIZE)
     screen.blit(surf, (0, 0))
