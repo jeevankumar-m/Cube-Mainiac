@@ -68,11 +68,9 @@ def move(rect, movement, tiles):
             collision_types['bottom'] = True
     return rect, collision_types
 
-#if distance between the x of player and x of enemy in a range 
-#if player.x > enemy.x 
-#then enemy.x += 2 
-#is player.x < enemy.x 
-#then enemy.x -= 2
+def spawn(enemy_rect, x, y):
+    enemy_rect.x = x * TILE_SIZE
+    enemy_rect.y = x * TILE_SIZE
 
 game_map = load_map('map')
 player_y_momentum = 0
@@ -92,6 +90,9 @@ shoot = False
 enemy_shoot = False
 bullets = []
 enemy_bullets = []
+
+#alive logic 
+enemy_alive = True
 
 running = True
 while running:
@@ -127,16 +128,17 @@ while running:
         enemy_cool_down_timer -= 1
 
     enemy_movement = [0, 0]
-    if enemy_moving_right == True:
-        enemy_movement[0] += 1
-    if enemy_moving_left == True:
-        enemy_movement[0] -= 1
+    if enemy_alive:
+        if enemy_moving_right == True:
+            enemy_movement[0] += 1
+        if enemy_moving_left == True:
+            enemy_movement[0] -= 1
 
     if shoot == True:
         bullets.append([pygame.Rect(player_rect.x, player_rect.y, 5, 5), facing])
         shoot = False
 
-    if enemy_shoot == True:
+    if enemy_alive and enemy_shoot == True:
         
         if enemy_cool_down_timer == 0:
             shoot_sfx.set_volume(1)
@@ -149,22 +151,23 @@ while running:
     enemy_moving_right = False
 
     #enemy chase logic
-    if abs(player_rect.x - enemy_rect.x) < 100:
-        if player_rect.x > enemy_rect.x and player_rect.y == enemy_rect.y:
-            enemy_moving_right = True 
-            enemy_shoot = True
-            enemy_facing = 1
-        if player_rect.x < enemy_rect.x and player_rect.y == enemy_rect.y:
-            enemy_moving_left = True 
-            enemy_shoot = True
-            enemy_facing = -1
+    if enemy_alive:
+        if abs(player_rect.x - enemy_rect.x) < 100:
+            if player_rect.x > enemy_rect.x and player_rect.y == enemy_rect.y:
+                enemy_moving_right = True 
+                enemy_shoot = True
+                enemy_facing = 1
+            if player_rect.x < enemy_rect.x and player_rect.y == enemy_rect.y:
+                enemy_moving_left = True 
+                enemy_shoot = True
+                enemy_facing = -1
 
-    if abs(player_rect.x - enemy_rect.x) < 5:
-        enemy_moving_left = False
-        enemy_moving_right = False
+        if abs(player_rect.x - enemy_rect.x) < 5:
+            enemy_moving_left = False
+            enemy_moving_right = False
 
-    if player_rect.y != enemy_rect.y:
-        enemy_shoot = False
+        if player_rect.y != enemy_rect.y:
+            enemy_shoot = False
 
     player_movement[1] += player_y_momentum 
     player_y_momentum += 0.2
@@ -196,6 +199,10 @@ while running:
             if bullet_rect.colliderect(tile):
                 bullets.remove(bullet)
                 break 
+            if bullet_rect.colliderect(enemy_rect):
+                bullets.remove(bullet)
+                enemy_alive = False 
+                break
 
     for enemy_bullet in enemy_bullets:
         enemy_bullet_rect, enemy_bullet_direction = enemy_bullet
@@ -248,7 +255,8 @@ while running:
                 moving_left = False 
 
     display.blit(player_img, (player_rect.x - scroll[0], player_rect.y - scroll[1]))
-    display.blit(enemy_img, (enemy_rect.x - scroll[0], enemy_rect.y - scroll[1]))
+    if enemy_alive:
+        display.blit(enemy_img, (enemy_rect.x - scroll[0], enemy_rect.y - scroll[1]))
 
     surf = pygame.transform.scale(display, WINDOW_SIZE)
     screen.blit(surf, (0, 0))
