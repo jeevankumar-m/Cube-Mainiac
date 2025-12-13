@@ -17,7 +17,7 @@ game_over_img = pygame.image.load('gameover.png')
 enemy_img = pygame.image.load('enemy.png')
 
 #font 
-font = pygame.font.Font('pixel-operator.ttf', 8)
+font = pygame.font.Font('pixel-operator.ttf', 12)
 
 #music 
 pygame.mixer.music.load('sfx/background.mp3')
@@ -103,7 +103,6 @@ player_max_health = 100
 player_health = player_max_health 
 enemy_max_health = 100 
 enemy_health = enemy_max_health
-
 
 #enemy spawns 
 enemy_spawn = []
@@ -199,12 +198,12 @@ while running:
 
     #enemy chase logic
     if enemy_alive:
-        if abs(player_rect.x - enemy_rect.x) < 100:
-            if player_rect.x > enemy_rect.x and player_rect.y == enemy_rect.y:
+        if abs(player_rect.x - enemy_rect.x) < 150:
+            if player_rect.x > enemy_rect.x:
                 enemy_moving_right = True 
                 enemy_shoot = True
                 enemy_facing = 1
-            if player_rect.x < enemy_rect.x and player_rect.y == enemy_rect.y:
+            if player_rect.x < enemy_rect.x:
                 enemy_moving_left = True 
                 enemy_shoot = True
                 enemy_facing = -1
@@ -322,8 +321,7 @@ while running:
         display.blit(enemy_img, (enemy_rect.x - scroll[0], enemy_rect.y - scroll[1]))
 
     #font display 
-    display.blit(text_surf, (10, 17))
-
+    display.blit(text_surf, (10, 15))
     surf = pygame.transform.scale(display, WINDOW_SIZE)
     screen.blit(surf, (0, 0))
     pygame.display.update() 
