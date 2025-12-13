@@ -72,11 +72,10 @@ def move(rect, movement, tiles):
             collision_types['bottom'] = True
     return rect, collision_types
 
-def spawn(enemy_rect, x, y):
-    enemy_rect.x = x * TILE_SIZE
-    enemy_rect.y = x * TILE_SIZE
-
 game_map = load_map('map')
+
+enemy_y_momentum = 0 
+
 player_y_momentum = 0
 air_timer = 0 
 
@@ -106,6 +105,20 @@ enemy_max_health = 100
 enemy_health = enemy_max_health
 
 
+#enemy spawns 
+enemy_spawn = []
+spawn_locs = [(24, 19), (20, 16), (26, 14)]
+for loc in spawn_locs:
+    enemy_spawn.append((loc[0] * TILE_SIZE, loc[1] * TILE_SIZE))
+
+current_spawn = 0 
+
+def enemy_spawn_func(index):
+    global enemy_alive, enemy_health
+    enemy_rect.x, enemy_rect.y = enemy_spawn[index]
+    enemy_alive = True 
+    enemy_health = enemy_max_health
+
 running = True
 while running:
     display.fill((72, 77, 77))
@@ -129,6 +142,11 @@ while running:
         rotated = pygame.transform.rotate(surf, -45)
         rot_rect = rotated.get_rect(center=obj_rect.center)
         display.blit(rotated, rot_rect)
+
+    if not enemy_alive:
+        current_spawn += 1
+        if current_spawn < len(enemy_spawn):
+            enemy_spawn_func(current_spawn)
 
     if player_alive:
         player_bar_width = 50
@@ -162,8 +180,7 @@ while running:
         bullets.append([pygame.Rect(player_rect.x, player_rect.y, 5, 5), facing])
         shoot = False
 
-    if enemy_alive and enemy_shoot == True:
-        
+    if enemy_alive and enemy_shoot == True:    
         if enemy_cool_down_timer == 0:
             shoot_sfx.set_volume(1)
             shoot_sfx.play()
@@ -173,6 +190,12 @@ while running:
 
     enemy_moving_left = False
     enemy_moving_right = False
+
+    enemy_movement[1] += enemy_y_momentum 
+    enemy_y_momentum += 0.2
+
+    if enemy_y_momentum > 3:
+        enemy_y_momentum = 0 
 
     #enemy chase logic
     if enemy_alive:
