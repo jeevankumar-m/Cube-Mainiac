@@ -10,11 +10,11 @@ display = pygame.Surface((350, 250))
 
 clock = pygame.time.Clock() 
 
-player_img = pygame.image.load('player.png') 
-dirt_img = pygame.image.load('dirt.png')
-dirt2_img = pygame.image.load('dirt2.png')
-game_over_img = pygame.image.load('gameover.png')
-enemy_img = pygame.image.load('enemy.png')
+player_img = pygame.image.load('assets/player.png') 
+dirt_img = pygame.image.load('assets/dirt.png')
+dirt2_img = pygame.image.load('assets/dirt2.png')
+game_over_img = pygame.image.load('assets/gameover.png')
+enemy_img = pygame.image.load('assets/enemy.png')
 
 #font 
 font = pygame.font.Font('pixel-operator.ttf', 12)
@@ -26,6 +26,8 @@ pygame.mixer.music.set_volume(0.7)
 
 jump_sfx = pygame.mixer.Sound('sfx/jump.wav')
 shoot_sfx = pygame.mixer.Sound('sfx/shoot.wav')
+damage_sfx = pygame.mixer.Sound('sfx/damage_sound.mp3')
+enemy_death_sfx = pygame.mixer.Sound('sfx/enemy_death.mp3')
 
 TILE_SIZE = dirt_img.get_width()
 
@@ -138,7 +140,6 @@ playing = True
 normal_fill = (72, 77, 77)
 game_over_fill = (0, 0, 0)
 text_surf = font.render("HP", False, (255, 255, 255))
-text_surf2 = font.render(str(kill_count) + "/" + str(enemy_creation_count) + " ENEMY KILLS", False, (255, 255, 255))
 text_surf3 = font2.render("GAME OVER :(", False, (255, 13, 36))
 text_surf4 = font2.render("YOU WON ;>", False, (95, 205, 228))
 
@@ -175,6 +176,8 @@ while running:
                 display.blit(rotated, rot_rect)
 
         if not enemy_alive:
+            enemy_death_sfx.set_volume(0.5)
+            enemy_death_sfx.play()
             current_spawn += 1
             if current_spawn < len(enemy_spawn):
                 enemy_spawn_func(current_spawn)
@@ -187,6 +190,7 @@ while running:
             player_bar_height = 4 
             health_ratio = player_health / player_max_health
             current_width = player_bar_width * health_ratio 
+            text_surf2 = font.render(str(kill_count) + "/" + str(enemy_creation_count) + " ENEMY KILLS", False, (255, 255, 255))
 
             pygame.draw.rect(display, (60, 60, 60), pygame.Rect(25, 20, player_bar_width, player_bar_height))
             pygame.draw.rect(display, (40, 200, 40), pygame.Rect(25, 20, current_width, player_bar_height))
@@ -288,6 +292,8 @@ while running:
                     bullets.remove(bullet)
                     break 
                 if bullet_rect.colliderect(enemy_rect):
+                    damage_sfx.set_volume(0.5)
+                    damage_sfx.play()
                     bullets.remove(bullet)
                     if enemy_health == 0:
                         enemy_alive = False
