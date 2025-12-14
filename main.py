@@ -74,7 +74,7 @@ def move(rect, movement, tiles):
             collision_types['bottom'] = True
     return rect, collision_types
 
-game_map = load_map('map')
+game_map = load_map('map2')
 
 enemy_y_momentum = 0 
 enemy_air_timer = 0 
