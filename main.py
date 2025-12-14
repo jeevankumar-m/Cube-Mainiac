@@ -1,4 +1,4 @@
-import pygame, sys
+import pygame, sys, random 
 pygame.init() 
 pygame.font.init() 
 from pygame.locals import * 
@@ -89,10 +89,13 @@ facing = 1 #for left side it is -1
 enemy_facing = 1
 enemy_cool_down_timer = 0 
 
+jump = False 
+
 shoot = False 
 enemy_shoot = False
 bullets = []
 enemy_bullets = []
+
 
 #alive logic 
 enemy_alive = True
@@ -106,7 +109,10 @@ enemy_health = enemy_max_health
 
 #enemy spawns 
 enemy_spawn = []
-spawn_locs = [(24, 19), (20, 16), (26, 14)]
+enemy_creation_count = 10
+spawn_locs = []
+for enemy_loc in range(enemy_creation_count):
+    spawn_locs.append((random.randint(8, 95), random.randint(4, 30)))
 for loc in spawn_locs:
     enemy_spawn.append((loc[0] * TILE_SIZE, loc[1] * TILE_SIZE))
 
@@ -123,8 +129,8 @@ while running:
     display.fill((72, 77, 77))
     pygame.draw.rect(display, (43, 46, 46), pygame.Rect(0, 150, 350, 125))
 
-    true_scroll[0] += (player_rect.x - true_scroll[0] - 184) / 20 
-    true_scroll[1] += (player_rect.y - true_scroll[1] - 134) / 20 
+    true_scroll[0] += (player_rect.x - true_scroll[0] - 175) / 5
+    true_scroll[1] += (player_rect.y - true_scroll[1] - 125) / 5
 
     scroll = true_scroll.copy() 
     scroll[0] = int(scroll[0])
@@ -191,7 +197,7 @@ while running:
     enemy_moving_right = False
 
     enemy_movement[1] += enemy_y_momentum 
-    enemy_y_momentum += 0.2
+    enemy_y_momentum += 0.3
 
     if enemy_y_momentum > 3:
         enemy_y_momentum = 0 
@@ -248,7 +254,7 @@ while running:
     for bullet in bullets:
         bullet_rect, direction = bullet
         bullet_rect.x += 10 * direction
-        pygame.draw.rect(display, (255, 0, 0), pygame.Rect(bullet_rect.x - scroll[0], (bullet_rect.y+5) - scroll[1], 5, 5))
+        pygame.draw.rect(display, (95, 205, 228), pygame.Rect(bullet_rect.x - scroll[0], (bullet_rect.y+5) - scroll[1], 5, 5))
         
         for tile in tile_rects:
             if bullet_rect.colliderect(tile):
@@ -264,7 +270,7 @@ while running:
     for enemy_bullet in enemy_bullets:
         enemy_bullet_rect, enemy_bullet_direction = enemy_bullet
         enemy_bullet_rect.x += 6 * enemy_bullet_direction
-        pygame.draw.rect(display, (0, 255, 0), pygame.Rect(enemy_bullet_rect.x - scroll[0], (enemy_bullet_rect.y+5) - scroll[1], 5, 5))
+        pygame.draw.rect(display, (255, 13, 36), pygame.Rect(enemy_bullet_rect.x - scroll[0], (enemy_bullet_rect.y+5) - scroll[1], 5, 5))
         
         for tile in tile_rects:
             if enemy_bullet_rect.colliderect(tile):
@@ -277,7 +283,7 @@ while running:
                 break 
     
     player_rect, collisions = move(player_rect, player_movement, tile_rects)
-    enemy_rect, collisions_enemny = move(enemy_rect, enemy_movement, tile_rects)
+    enemy_rect, collisions_enemy = move(enemy_rect, enemy_movement, tile_rects)
 
     if player_rect.colliderect(game_over_rect[0]):
         running = False
@@ -289,7 +295,33 @@ while running:
         player_y_momentum = 1
     else:
         air_timer += 1
-    
+
+    if collisions_enemy['left']:
+        enemy_y_momentum = -5
+    if collisions_enemy['right']:
+        enemy_y_momentum = - 5
+
+    prev_player_rect = player_rect.copy() 
+
+    if player_rect.colliderect(enemy_rect):
+
+        dx = (player_rect.centerx - enemy_rect.centerx)
+        dy = (player_rect.centery - enemy_rect.centery)
+        overlap_x = (player_rect.width // 2 + enemy_rect.width // 2) - abs(dx)
+        overlap_y = (player_rect.height // 2 + enemy_rect.height // 2) - abs(dy)
+        if overlap_x < overlap_y:
+            if dx > 0:
+                player_rect.left = enemy_rect.right
+            else:
+                player_rect.right = enemy_rect.left
+        else:
+            if dy > 0:
+                player_rect.top = enemy_rect.bottom
+            else:
+                player_rect.bottom = enemy_rect.top
+                player_y_momentum = 0
+                air_timer = 0
+            
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit() 
@@ -302,6 +334,7 @@ while running:
                 moving_left = True 
                 facing = -1
             if event.key == K_UP:
+                jump = True 
                 if air_timer < 6:
                     player_y_momentum = -5
                     jump_sfx.play()
