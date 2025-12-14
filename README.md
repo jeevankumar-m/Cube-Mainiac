@@ -2,12 +2,12 @@
 
 A retro-style 2D platformer shooter game built with Python and Pygame. Battle through waves of enemies, navigate challenging terrain, and reach the goal to claim victory.
 
-[![Contributors](https://img.shields.io/github/contributors/YOUR_USERNAME/Cubemainiac?style=for-the-badge&label=CONTRIBUTORS&labelColor=2d2d2d&color=ff6b6b)](https://github.com/YOUR_USERNAME/Cubemainiac/graphs/contributors)
-[![Forks](https://img.shields.io/github/forks/YOUR_USERNAME/Cubemainiac?style=for-the-badge&label=FORKS&labelColor=2d2d2d&color=ff6b6b)](https://github.com/YOUR_USERNAME/Cubemainiac/network/members)
-[![Stars](https://img.shields.io/github/stars/YOUR_USERNAME/Cubemainiac?style=for-the-badge&label=STARS&labelColor=2d2d2d&color=ff6b6b)](https://github.com/YOUR_USERNAME/Cubemainiac/stargazers)
-[![Issues](https://img.shields.io/github/issues/YOUR_USERNAME/Cubemainiac?style=for-the-badge&label=ISSUES&labelColor=2d2d2d&color=ff6b6b)](https://github.com/YOUR_USERNAME/Cubemainiac/issues)
-[![License](https://img.shields.io/github/license/YOUR_USERNAME/Cubemainiac?style=for-the-badge&label=LICENSE&labelColor=2d2d2d&color=ff6b6b)](https://github.com/YOUR_USERNAME/Cubemainiac/blob/main/LICENSE)
-[![LinkedIn](https://img.shields.io/badge/LINKEDIN-Profile-blue?style=for-the-badge&labelColor=2d2d2d&logo=linkedin)](https://www.linkedin.com/in/YOUR_PROFILE)
+[![Contributors](https://img.shields.io/github/contributors/jeevankumar-m/Cubemainiac?style=for-the-badge&label=CONTRIBUTORS&labelColor=2d2d2d&color=ff6b6b)](https://github.com/jeevankumar-m/Cubemainiac/graphs/contributors)
+[![Forks](https://img.shields.io/github/forks/jeevankumar-m/Cubemainiac?style=for-the-badge&label=FORKS&labelColor=2d2d2d&color=ff6b6b)](https://github.com/jeevankumar-m/Cubemainiac/network/members)
+[![Stars](https://img.shields.io/github/stars/jeevankumar-m/Cubemainiac?style=for-the-badge&label=STARS&labelColor=2d2d2d&color=ff6b6b)](https://github.com/jeevankumar-m/Cubemainiac/stargazers)
+[![Issues](https://img.shields.io/github/issues/jeevankumar-m/Cubemainiac?style=for-the-badge&label=ISSUES&labelColor=2d2d2d&color=ff6b6b)](https://github.com/jeevankumar-m/Cubemainiac/issues)
+[![License](https://img.shields.io/github/license/jeevankumar-m/Cubemainiac?style=for-the-badge&label=LICENSE&labelColor=2d2d2d&color=ff6b6b)](https://github.com/jeevankumar-m/Cubemainiac/blob/main/LICENSE)
+[![LinkedIn](https://img.shields.io/badge/LINKEDIN-Profile-blue?style=for-the-badge&labelColor=2d2d2d&logo=linkedin)](https://www.linkedin.com/in/jeevan-kumar06)
 
 ---
 
