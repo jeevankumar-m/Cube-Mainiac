@@ -119,7 +119,7 @@ for loc in spawn_locs:
 
 current_spawn = 0 
 
-kill_count = 0 
+kill_count = 0
 kill_complete = False
 
 def enemy_spawn_func(index):
@@ -133,224 +133,229 @@ running = True
 game_over = False 
 winning = False
 y_axis_shift = -20
+playing = True 
 
 normal_fill = (72, 77, 77)
 game_over_fill = (0, 0, 0)
-text_surf3 = font2.render("GAME OVER !", False, (255, 13, 36))
-text_surf4 = font2.render("YOU WON !", False, (95, 205, 228))
+text_surf = font.render("HP", False, (255, 255, 255))
+text_surf2 = font.render(str(kill_count) + "/" + str(enemy_creation_count) + " ENEMY KILLS", False, (255, 255, 255))
+text_surf3 = font2.render("GAME OVER :(", False, (255, 13, 36))
+text_surf4 = font2.render("YOU WON ;>", False, (95, 205, 228))
 
 while running:
-    if player_alive == True:
-        display.fill(normal_fill)
-    if player_alive != True:
-        display.fill(game_over_fill)
-    if winning:
-        display.fill(game_over_fill)
+    if playing:
+        if player_alive == True:
+            display.fill(normal_fill)
+        if player_alive != True:
+            display.fill(game_over_fill)
+        if winning:
+            display.fill(game_over_fill)
 
-    if player_alive:
-        pygame.draw.rect(display, (43, 46, 46), pygame.Rect(0, 150, 350, 125))
+        if player_alive:
+            pygame.draw.rect(display, (43, 46, 46), pygame.Rect(0, 150, 350, 125))
 
-    true_scroll[0] += (player_rect.x - true_scroll[0] - 175) / 5
-    true_scroll[1] += (player_rect.y - true_scroll[1] - 125) / 5
+        true_scroll[0] += (player_rect.x - true_scroll[0] - 175) / 5
+        true_scroll[1] += (player_rect.y - true_scroll[1] - 125) / 5
 
-    scroll = true_scroll.copy() 
-    scroll[0] = int(scroll[0])
-    scroll[1] = int(scroll[1])
+        scroll = true_scroll.copy() 
+        scroll[0] = int(scroll[0])
+        scroll[1] = int(scroll[1])
 
-    if player_alive:
-        for background_object in background_objects:
-            obj_rect = pygame.Rect(background_object[1][0]-scroll[0] * background_object[0], background_object[1][1]-scroll[1] * background_object[0], background_object[1][2], background_object[1][3])
-            if background_object[0] == 0.5:   
-                surf = pygame.Surface((obj_rect.width, obj_rect.height), pygame.SRCALPHA)
-                pygame.draw.rect(surf, (33, 35, 35), (0, 0, obj_rect.width, obj_rect.height))
-            else: 
-                surf = pygame.Surface((obj_rect.width, obj_rect.height), pygame.SRCALPHA)
-                pygame.draw.rect(surf, (14, 15, 15), (0, 0, obj_rect.width, obj_rect.height))
-            rotated = pygame.transform.rotate(surf, -45)
-            rot_rect = rotated.get_rect(center=obj_rect.center)
-            display.blit(rotated, rot_rect)
+        if player_alive:
+            for background_object in background_objects:
+                obj_rect = pygame.Rect(background_object[1][0]-scroll[0] * background_object[0], background_object[1][1]-scroll[1] * background_object[0], background_object[1][2], background_object[1][3])
+                if background_object[0] == 0.5:   
+                    surf = pygame.Surface((obj_rect.width, obj_rect.height), pygame.SRCALPHA)
+                    pygame.draw.rect(surf, (33, 35, 35), (0, 0, obj_rect.width, obj_rect.height))
+                else: 
+                    surf = pygame.Surface((obj_rect.width, obj_rect.height), pygame.SRCALPHA)
+                    pygame.draw.rect(surf, (14, 15, 15), (0, 0, obj_rect.width, obj_rect.height))
+                rotated = pygame.transform.rotate(surf, -45)
+                rot_rect = rotated.get_rect(center=obj_rect.center)
+                display.blit(rotated, rot_rect)
 
-    if not enemy_alive:
-        current_spawn += 1
-        if current_spawn < len(enemy_spawn):
-            enemy_spawn_func(current_spawn)
+        if not enemy_alive:
+            current_spawn += 1
+            if current_spawn < len(enemy_spawn):
+                enemy_spawn_func(current_spawn)
 
-    if kill_count == enemy_creation_count:
-        kill_complete = True 
+        if kill_count == enemy_creation_count:
+            kill_complete = True 
 
-    if player_alive:
-        player_bar_width = 50
-        player_bar_height = 4 
-        health_ratio = player_health / player_max_health
-        current_width = player_bar_width * health_ratio 
+        if player_alive:
+            player_bar_width = 50
+            player_bar_height = 4 
+            health_ratio = player_health / player_max_health
+            current_width = player_bar_width * health_ratio 
 
-        text_surf = font.render("HP", False, (255, 255, 255))
-        text_surf2 = font.render(str(kill_count) + "/" + str(enemy_creation_count) + " ENEMY KILLS", False, (255, 255, 255))
+            pygame.draw.rect(display, (60, 60, 60), pygame.Rect(25, 20, player_bar_width, player_bar_height))
+            pygame.draw.rect(display, (40, 200, 40), pygame.Rect(25, 20, current_width, player_bar_height))
+            pygame.draw.rect(display, (255, 255, 255), pygame.Rect(25, 20, player_bar_width, player_bar_height), 1)
 
-        pygame.draw.rect(display, (60, 60, 60), pygame.Rect(25, 20, player_bar_width, player_bar_height))
-        pygame.draw.rect(display, (40, 200, 40), pygame.Rect(25, 20, current_width, player_bar_height))
-        pygame.draw.rect(display, (255, 255, 255), pygame.Rect(25, 20, player_bar_width, player_bar_height), 1)
+        player_movement = [0, 0]
+        if moving_right == True:
+            player_movement[0] += 3
+        if moving_left == True:
+            player_movement[0] -= 3
 
-    player_movement = [0, 0]
-    if moving_right == True:
-        player_movement[0] += 3
-    if moving_left == True:
-        player_movement[0] -= 3
+        if enemy_cool_down_timer > 0:
+            enemy_cool_down_timer -= 1
 
-    if enemy_cool_down_timer > 0:
-        enemy_cool_down_timer -= 1
+        enemy_movement = [0, 0]
+        if enemy_alive:
+            if enemy_moving_right == True:
+                enemy_movement[0] += 1
+            if enemy_moving_left == True:
+                enemy_movement[0] -= 1
 
-    enemy_movement = [0, 0]
-    if enemy_alive:
-        if enemy_moving_right == True:
-            enemy_movement[0] += 1
-        if enemy_moving_left == True:
-            enemy_movement[0] -= 1
-
-    if shoot == True:
-        bullets.append([pygame.Rect(player_rect.x, player_rect.y, 5, 5), facing])
-        shoot = False
-
-    if enemy_alive and enemy_shoot == True:    
-        if enemy_cool_down_timer == 0:
-            shoot_sfx.set_volume(1)
-            shoot_sfx.play()
-            enemy_bullets.append([pygame.Rect(enemy_rect.x, enemy_rect.y, 5, 5), enemy_facing])
-            enemy_cool_down_timer = 60 
+        if shoot == True:
+            bullets.append([pygame.Rect(player_rect.x, player_rect.y, 5, 5), facing])
             shoot = False
 
-    enemy_moving_left = False
-    enemy_moving_right = False
+        if enemy_alive and enemy_shoot == True:    
+            if enemy_cool_down_timer == 0:
+                shoot_sfx.set_volume(1)
+                shoot_sfx.play()
+                enemy_bullets.append([pygame.Rect(enemy_rect.x, enemy_rect.y, 5, 5), enemy_facing])
+                enemy_cool_down_timer = 60 
+                shoot = False
 
-    enemy_movement[1] += enemy_y_momentum 
-    enemy_y_momentum += 0.3
+        enemy_moving_left = False
+        enemy_moving_right = False
 
-    #enemy chase logic
-    if enemy_alive:
-        if abs(player_rect.x - enemy_rect.x) < 150:
-            if player_rect.x > enemy_rect.x:
-                enemy_moving_right = True 
-                enemy_shoot = True
-                enemy_facing = 1
-            if player_rect.x < enemy_rect.x:
-                enemy_moving_left = True 
-                enemy_shoot = True
-                enemy_facing = -1
+        enemy_movement[1] += enemy_y_momentum 
+        enemy_y_momentum += 0.3
 
-        if abs(player_rect.x - enemy_rect.x) < 5:
-            enemy_moving_left = False
-            enemy_moving_right = False
+        #enemy chase logic
+        if enemy_alive:
+            if abs(player_rect.x - enemy_rect.x) < 150:
+                if player_rect.x > enemy_rect.x:
+                    enemy_moving_right = True 
+                    enemy_shoot = True
+                    enemy_facing = 1
+                if player_rect.x < enemy_rect.x:
+                    enemy_moving_left = True 
+                    enemy_shoot = True
+                    enemy_facing = -1
 
-        if player_rect.y != enemy_rect.y:
-            enemy_shoot = False
+            if abs(player_rect.x - enemy_rect.x) < 5:
+                enemy_moving_left = False
+                enemy_moving_right = False
 
-    if enemy_alive:
-        enemy_bar_width = 16
-        enemy_bar_height = 2
-        health_ratio = enemy_health / enemy_max_health
-        current_width = enemy_bar_width * health_ratio 
+            if player_rect.y != enemy_rect.y:
+                enemy_shoot = False
 
-        pygame.draw.rect(display, (60, 60, 60), pygame.Rect(enemy_rect.x - scroll[0], enemy_rect.y - scroll[1] - 6, enemy_bar_width, enemy_bar_height))
-        pygame.draw.rect(display, (255, 0, 0), pygame.Rect(enemy_rect.x - scroll[0], enemy_rect.y - scroll[1] - 6, current_width, enemy_bar_height))
+        if enemy_alive:
+            enemy_bar_width = 16
+            enemy_bar_height = 2
+            health_ratio = enemy_health / enemy_max_health
+            current_width = enemy_bar_width * health_ratio 
 
-    player_movement[1] += player_y_momentum 
-    player_y_momentum += 0.2
+            pygame.draw.rect(display, (60, 60, 60), pygame.Rect(enemy_rect.x - scroll[0], enemy_rect.y - scroll[1] - 6, enemy_bar_width, enemy_bar_height))
+            pygame.draw.rect(display, (255, 0, 0), pygame.Rect(enemy_rect.x - scroll[0], enemy_rect.y - scroll[1] - 6, current_width, enemy_bar_height))
 
-    if player_movement[1] > 60:
-        player_alive = False 
+        player_movement[1] += player_y_momentum 
+        player_y_momentum += 0.2
 
-    tile_rects = []
-    game_over_rect = []
-    y = 0 
-    for row in game_map:
-        x = 0
-        for tile in row:
-            if tile == '1': 
-                display.blit(dirt_img, (x * TILE_SIZE - scroll[0], y * TILE_SIZE - scroll[1]))
-            if tile == '2':
-                display.blit(dirt2_img, (x * TILE_SIZE - scroll[0], y * TILE_SIZE - scroll[1]))
-            if tile == '3':
-                display.blit(game_over_img, (x * TILE_SIZE - scroll[0], y * TILE_SIZE - scroll[1]))
-                game_over_rect.append(pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE))
-            if tile != '0' and tile != '3':
-                tile_rects.append(pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE))
-            x += 1 
-        y += 1
+        if player_movement[1] > 60:
+            player_alive = False 
 
-    for bullet in bullets:
-        bullet_rect, direction = bullet
-        bullet_rect.x += 10 * direction
-        pygame.draw.rect(display, (95, 205, 228), pygame.Rect(bullet_rect.x - scroll[0], (bullet_rect.y+5) - scroll[1], 5, 5))
+        tile_rects = []
+        game_over_rect = []
+        y = 0 
+        for row in game_map:
+            x = 0
+            for tile in row:
+                if tile == '1': 
+                    display.blit(dirt_img, (x * TILE_SIZE - scroll[0], y * TILE_SIZE - scroll[1]))
+                if tile == '2':
+                    display.blit(dirt2_img, (x * TILE_SIZE - scroll[0], y * TILE_SIZE - scroll[1]))
+                if tile == '3':
+                    display.blit(game_over_img, (x * TILE_SIZE - scroll[0], y * TILE_SIZE - scroll[1]))
+                    game_over_rect.append(pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE))
+                if tile != '0' and tile != '3':
+                    tile_rects.append(pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE))
+                x += 1 
+            y += 1
+
+        for bullet in bullets:
+            bullet_rect, direction = bullet
+            bullet_rect.x += 10 * direction
+            pygame.draw.rect(display, (95, 205, 228), pygame.Rect(bullet_rect.x - scroll[0], (bullet_rect.y+5) - scroll[1], 5, 5))
+            
+            for tile in tile_rects:
+                if bullet_rect.colliderect(tile):
+                    bullets.remove(bullet)
+                    break 
+                if bullet_rect.colliderect(enemy_rect):
+                    bullets.remove(bullet)
+                    if enemy_health == 0:
+                        enemy_alive = False
+                        kill_count += 1
+                    enemy_health -= 25
+                    break
+
+        for enemy_bullet in enemy_bullets:
+            enemy_bullet_rect, enemy_bullet_direction = enemy_bullet
+            enemy_bullet_rect.x += 6 * enemy_bullet_direction
+            pygame.draw.rect(display, (255, 13, 36), pygame.Rect(enemy_bullet_rect.x - scroll[0], (enemy_bullet_rect.y+5) - scroll[1], 5, 5))
+            
+            for tile in tile_rects:
+                if enemy_bullet_rect.colliderect(tile):
+                    enemy_bullets.remove(enemy_bullet)
+                if enemy_bullet_rect.colliderect(player_rect):
+                    enemy_bullets.remove(enemy_bullet)
+                    if player_health < 0:
+                        player_alive = False
+                    player_health -= 15
+                    break 
         
-        for tile in tile_rects:
-            if bullet_rect.colliderect(tile):
-                bullets.remove(bullet)
-                break 
-            if bullet_rect.colliderect(enemy_rect):
-                bullets.remove(bullet)
-                if enemy_health == 0:
-                    enemy_alive = False
-                    kill_count += 1
-                enemy_health -= 25
-                break
+        player_rect, collisions = move(player_rect, player_movement, tile_rects)
+        enemy_rect, collisions_enemy = move(enemy_rect, enemy_movement, tile_rects)
 
-    for enemy_bullet in enemy_bullets:
-        enemy_bullet_rect, enemy_bullet_direction = enemy_bullet
-        enemy_bullet_rect.x += 6 * enemy_bullet_direction
-        pygame.draw.rect(display, (255, 13, 36), pygame.Rect(enemy_bullet_rect.x - scroll[0], (enemy_bullet_rect.y+5) - scroll[1], 5, 5))
-        
-        for tile in tile_rects:
-            if enemy_bullet_rect.colliderect(tile):
-                enemy_bullets.remove(enemy_bullet)
-            if enemy_bullet_rect.colliderect(player_rect):
-                enemy_bullets.remove(enemy_bullet)
-                if player_health == 0:
-                    player_alive = False
-                player_health -= 15
-                break 
-    
-    player_rect, collisions = move(player_rect, player_movement, tile_rects)
-    enemy_rect, collisions_enemy = move(enemy_rect, enemy_movement, tile_rects)
+        if player_rect.colliderect(game_over_rect[0]) and kill_complete == True:
+            winning = True 
 
-    if player_rect.colliderect(game_over_rect[0]) and kill_complete == True:
-        winning = True 
-
-    if collisions['bottom']:
-        player_y_momentum = 0 
-        air_timer = 0 
-    if collisions['top']:
-        player_y_momentum = 1
-    else:
-        air_timer += 1
+        if collisions['bottom']:
+            player_y_momentum = 0 
+            air_timer = 0 
+        if collisions['top']:
+            player_y_momentum = 1
+        else:
+            air_timer += 1
 
 
-    if collisions_enemy['bottom']:
-        enemy_y_momentum = 0
-    if collisions_enemy['top']:
-        enemy_y_momentum = 1
+        if collisions_enemy['bottom']:
+            enemy_y_momentum = 0
+        if collisions_enemy['top']:
+            enemy_y_momentum = 1
 
-    if enemy_y_momentum > 100:
-        enemy_rect.x = random.randint(8, 95)
-        enemy_rect.y = random.randint(4, 30)
+        if enemy_y_momentum > 100:
+            enemy_rect.x = random.randint(8, 95)
+            enemy_rect.y = random.randint(4, 30)
 
-    if collisions_enemy['left']:
-        enemy_y_momentum = -5
-    if collisions_enemy['right']:
-        enemy_y_momentum = - 5
+        if collisions_enemy['left']:
+            enemy_y_momentum = -5
+        if collisions_enemy['right']:
+            enemy_y_momentum = - 5
 
-    prev_player_rect = player_rect.copy() 
+        prev_player_rect = player_rect.copy() 
 
-    if player_rect.colliderect(enemy_rect):
+        if player_rect.colliderect(enemy_rect):
 
-        dx = (player_rect.centerx - enemy_rect.centerx)
-        dy = (player_rect.centery - enemy_rect.centery)
-        overlap_x = (player_rect.width // 2 + enemy_rect.width // 2) - abs(dx)
-        overlap_y = (player_rect.height // 2 + enemy_rect.height // 2) - abs(dy)
-        if overlap_x < overlap_y:
-            if dx > 0:
-                player_rect.left = enemy_rect.right
-            else:
-                player_rect.right = enemy_rect.left
+            dx = (player_rect.centerx - enemy_rect.centerx)
+            dy = (player_rect.centery - enemy_rect.centery)
+            overlap_x = (player_rect.width // 2 + enemy_rect.width // 2) - abs(dx)
+            overlap_y = (player_rect.height // 2 + enemy_rect.height // 2) - abs(dy)
+            if overlap_x < overlap_y:
+                if dx > 0:
+                    player_rect.left = enemy_rect.right
+                else:
+                    player_rect.right = enemy_rect.left
+
+        display.blit(player_img, (player_rect.x - scroll[0], player_rect.y - scroll[1]))
+        if enemy_alive:
+            display.blit(enemy_img, (enemy_rect.x - scroll[0], enemy_rect.y - scroll[1]))
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -379,26 +384,26 @@ while running:
             if event.key == K_LEFT:
                 moving_left = False 
 
-    display.blit(player_img, (player_rect.x - scroll[0], player_rect.y - scroll[1]))
-    if enemy_alive:
-        display.blit(enemy_img, (enemy_rect.x - scroll[0], enemy_rect.y - scroll[1]))
-
+    if player_alive == False:
+        playing = False
+    if winning == True:
+        playing = False
     #font display 
-    if player_alive:
+    if playing == True and player_alive == True:
         display.blit(text_surf, (10, 15))
         display.blit(text_surf2, (230, 15))
-    if player_alive != True:
-        if y_axis_shift < 100:
+    if player_alive != True and playing == False:
+        if y_axis_shift < 110:
             display.fill((0, 0, 0))
-            display.blit(text_surf3, (105, y_axis_shift))
+            display.blit(text_surf3, (80, y_axis_shift))
             y_axis_shift += 2
-        display.blit(text_surf3, (105, y_axis_shift))
-    if player_alive and winning:
-        if y_axis_shift < 100:
+        display.blit(text_surf3, (80, y_axis_shift))
+    if player_alive == True and winning == True:
+        if y_axis_shift < 110:
             display.fill((0, 0, 0))
-            display.blit(text_surf4, (105, y_axis_shift))
+            display.blit(text_surf4, (80, y_axis_shift))
             y_axis_shift += 2
-        display.blit(text_surf4, (105, y_axis_shift))
+        display.blit(text_surf4, (80, y_axis_shift))
 
     surf = pygame.transform.scale(display, WINDOW_SIZE)
     screen.blit(surf, (0, 0))
