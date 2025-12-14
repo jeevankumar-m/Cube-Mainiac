@@ -18,7 +18,7 @@ enemy_img = pygame.image.load('enemy.png')
 
 #font 
 font = pygame.font.Font('pixel-operator.ttf', 12)
-
+font2 = pygame.font.Font('pixel-operator.ttf', 30)
 #music 
 pygame.mixer.music.load('sfx/background.mp3')
 pygame.mixer.music.play(-1)
@@ -131,11 +131,24 @@ def enemy_spawn_func(index):
 #States 
 running = True
 game_over = False 
-winning = False 
+winning = False
+y_axis_shift = -20
+
+normal_fill = (72, 77, 77)
+game_over_fill = (0, 0, 0)
+text_surf3 = font2.render("GAME OVER !", False, (255, 13, 36))
+text_surf4 = font2.render("YOU WON !", False, (95, 205, 228))
 
 while running:
-    display.fill((72, 77, 77))
-    pygame.draw.rect(display, (43, 46, 46), pygame.Rect(0, 150, 350, 125))
+    if player_alive == True:
+        display.fill(normal_fill)
+    if player_alive != True:
+        display.fill(game_over_fill)
+    if winning:
+        display.fill(game_over_fill)
+
+    if player_alive:
+        pygame.draw.rect(display, (43, 46, 46), pygame.Rect(0, 150, 350, 125))
 
     true_scroll[0] += (player_rect.x - true_scroll[0] - 175) / 5
     true_scroll[1] += (player_rect.y - true_scroll[1] - 125) / 5
@@ -144,17 +157,18 @@ while running:
     scroll[0] = int(scroll[0])
     scroll[1] = int(scroll[1])
 
-    for background_object in background_objects:
-        obj_rect = pygame.Rect(background_object[1][0]-scroll[0] * background_object[0], background_object[1][1]-scroll[1] * background_object[0], background_object[1][2], background_object[1][3])
-        if background_object[0] == 0.5:   
-            surf = pygame.Surface((obj_rect.width, obj_rect.height), pygame.SRCALPHA)
-            pygame.draw.rect(surf, (33, 35, 35), (0, 0, obj_rect.width, obj_rect.height))
-        else: 
-            surf = pygame.Surface((obj_rect.width, obj_rect.height), pygame.SRCALPHA)
-            pygame.draw.rect(surf, (14, 15, 15), (0, 0, obj_rect.width, obj_rect.height))
-        rotated = pygame.transform.rotate(surf, -45)
-        rot_rect = rotated.get_rect(center=obj_rect.center)
-        display.blit(rotated, rot_rect)
+    if player_alive:
+        for background_object in background_objects:
+            obj_rect = pygame.Rect(background_object[1][0]-scroll[0] * background_object[0], background_object[1][1]-scroll[1] * background_object[0], background_object[1][2], background_object[1][3])
+            if background_object[0] == 0.5:   
+                surf = pygame.Surface((obj_rect.width, obj_rect.height), pygame.SRCALPHA)
+                pygame.draw.rect(surf, (33, 35, 35), (0, 0, obj_rect.width, obj_rect.height))
+            else: 
+                surf = pygame.Surface((obj_rect.width, obj_rect.height), pygame.SRCALPHA)
+                pygame.draw.rect(surf, (14, 15, 15), (0, 0, obj_rect.width, obj_rect.height))
+            rotated = pygame.transform.rotate(surf, -45)
+            rot_rect = rotated.get_rect(center=obj_rect.center)
+            display.blit(rotated, rot_rect)
 
     if not enemy_alive:
         current_spawn += 1
@@ -242,6 +256,9 @@ while running:
     player_movement[1] += player_y_momentum 
     player_y_momentum += 0.2
 
+    if player_movement[1] > 60:
+        player_alive = False 
+
     tile_rects = []
     game_over_rect = []
     y = 0 
@@ -296,7 +313,7 @@ while running:
     enemy_rect, collisions_enemy = move(enemy_rect, enemy_movement, tile_rects)
 
     if player_rect.colliderect(game_over_rect[0]) and kill_complete == True:
-        running = False 
+        winning = True 
 
     if collisions['bottom']:
         player_y_momentum = 0 
@@ -366,11 +383,23 @@ while running:
     if enemy_alive:
         display.blit(enemy_img, (enemy_rect.x - scroll[0], enemy_rect.y - scroll[1]))
 
-    print("P_Y_M:" + str(player_y_momentum), "E_Y_M:"+ str(enemy_y_momentum))
-
     #font display 
-    display.blit(text_surf, (10, 15))
-    display.blit(text_surf2, (230, 15))
+    if player_alive:
+        display.blit(text_surf, (10, 15))
+        display.blit(text_surf2, (230, 15))
+    if player_alive != True:
+        if y_axis_shift < 100:
+            display.fill((0, 0, 0))
+            display.blit(text_surf3, (105, y_axis_shift))
+            y_axis_shift += 2
+        display.blit(text_surf3, (105, y_axis_shift))
+    if player_alive and winning:
+        if y_axis_shift < 100:
+            display.fill((0, 0, 0))
+            display.blit(text_surf4, (105, y_axis_shift))
+            y_axis_shift += 2
+        display.blit(text_surf4, (105, y_axis_shift))
+
     surf = pygame.transform.scale(display, WINDOW_SIZE)
     screen.blit(surf, (0, 0))
     pygame.display.update() 
