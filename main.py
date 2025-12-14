@@ -75,6 +75,7 @@ def move(rect, movement, tiles):
 game_map = load_map('map')
 
 enemy_y_momentum = 0 
+enemy_air_timer = 0 
 
 player_y_momentum = 0
 air_timer = 0 
@@ -118,13 +119,20 @@ for loc in spawn_locs:
 
 current_spawn = 0 
 
+kill_count = 0 
+kill_complete = False
+
 def enemy_spawn_func(index):
     global enemy_alive, enemy_health
     enemy_rect.x, enemy_rect.y = enemy_spawn[index]
     enemy_alive = True 
     enemy_health = enemy_max_health
 
+#States 
 running = True
+game_over = False 
+winning = False 
+
 while running:
     display.fill((72, 77, 77))
     pygame.draw.rect(display, (43, 46, 46), pygame.Rect(0, 150, 350, 125))
@@ -153,6 +161,9 @@ while running:
         if current_spawn < len(enemy_spawn):
             enemy_spawn_func(current_spawn)
 
+    if kill_count == enemy_creation_count:
+        kill_complete = True 
+
     if player_alive:
         player_bar_width = 50
         player_bar_height = 4 
@@ -160,6 +171,7 @@ while running:
         current_width = player_bar_width * health_ratio 
 
         text_surf = font.render("HP", False, (255, 255, 255))
+        text_surf2 = font.render(str(kill_count) + "/" + str(enemy_creation_count) + " ENEMY KILLS", False, (255, 255, 255))
 
         pygame.draw.rect(display, (60, 60, 60), pygame.Rect(25, 20, player_bar_width, player_bar_height))
         pygame.draw.rect(display, (40, 200, 40), pygame.Rect(25, 20, current_width, player_bar_height))
@@ -198,9 +210,6 @@ while running:
 
     enemy_movement[1] += enemy_y_momentum 
     enemy_y_momentum += 0.3
-
-    if enemy_y_momentum > 3:
-        enemy_y_momentum = 0 
 
     #enemy chase logic
     if enemy_alive:
@@ -264,6 +273,7 @@ while running:
                 bullets.remove(bullet)
                 if enemy_health == 0:
                     enemy_alive = False
+                    kill_count += 1
                 enemy_health -= 25
                 break
 
@@ -285,8 +295,8 @@ while running:
     player_rect, collisions = move(player_rect, player_movement, tile_rects)
     enemy_rect, collisions_enemy = move(enemy_rect, enemy_movement, tile_rects)
 
-    if player_rect.colliderect(game_over_rect[0]):
-        running = False
+    if player_rect.colliderect(game_over_rect[0]) and kill_complete == True:
+        running = False 
 
     if collisions['bottom']:
         player_y_momentum = 0 
@@ -295,6 +305,16 @@ while running:
         player_y_momentum = 1
     else:
         air_timer += 1
+
+
+    if collisions_enemy['bottom']:
+        enemy_y_momentum = 0
+    if collisions_enemy['top']:
+        enemy_y_momentum = 1
+
+    if enemy_y_momentum > 100:
+        enemy_rect.x = random.randint(8, 95)
+        enemy_rect.y = random.randint(4, 30)
 
     if collisions_enemy['left']:
         enemy_y_momentum = -5
@@ -314,14 +334,7 @@ while running:
                 player_rect.left = enemy_rect.right
             else:
                 player_rect.right = enemy_rect.left
-        else:
-            if dy > 0:
-                player_rect.top = enemy_rect.bottom
-            else:
-                player_rect.bottom = enemy_rect.top
-                player_y_momentum = 0
-                air_timer = 0
-            
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit() 
@@ -353,8 +366,11 @@ while running:
     if enemy_alive:
         display.blit(enemy_img, (enemy_rect.x - scroll[0], enemy_rect.y - scroll[1]))
 
+    print("P_Y_M:" + str(player_y_momentum), "E_Y_M:"+ str(enemy_y_momentum))
+
     #font display 
     display.blit(text_surf, (10, 15))
+    display.blit(text_surf2, (230, 15))
     surf = pygame.transform.scale(display, WINDOW_SIZE)
     screen.blit(surf, (0, 0))
     pygame.display.update() 
